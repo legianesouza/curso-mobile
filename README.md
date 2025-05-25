@@ -1,149 +1,113 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(const ProdutoApp());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ProdutoApp extends StatelessWidget {
+  const ProdutoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ProductListScreen(),
+      title: 'Cadastro de Produtos',
+      theme: ThemeData(primarySwatch: Colors.teal),
+      home: const CadastroProdutoScreen(),
     );
   }
 }
 
-class Product {
-  final String name, description, category, imageUrl;
-  final double purchasePrice, salePrice, discount;
-  final int quantity;
-  final bool isActive, isOnSale;
+class Produto {
+  String nome;
+  double precoCompra;
+  double precoVenda;
+  int quantidade;
+  String descricao;
+  String categoria;
+  String imagemUrl;
+  bool ativo;
+  bool promocao;
+  double desconto;
 
-  const Product({
-    required this.name,
-    required this.purchasePrice,
-    required this.salePrice,
-    required this.quantity,
-    required this.description,
-    required this.category,
-    required this.imageUrl,
-    required this.isActive,
-    required this.isOnSale,
-    required this.discount,
+  Produto({
+    required this.nome,
+    required this.precoCompra,
+    required this.precoVenda,
+    required this.quantidade,
+    required this.descricao,
+    required this.categoria,
+    required this.imagemUrl,
+    required this.ativo,
+    required this.promocao,
+    required this.desconto,
   });
 }
 
-class ProductListScreen extends StatefulWidget {
-  @override
-  State<ProductListScreen> createState() => _ProductListScreenState();
-}
+List<Produto> produtos = [
+  Produto(
+    nome: 'Vestido de Inverno',
+    precoCompra: 80,
+    precoVenda: 149.99,
+    quantidade: 5,
+    descricao: 'Vestido elegante para o inverno.',
+    categoria: 'Roupas',
+    imagemUrl: 'https://i.imgur.com/WsYCM0e.png',
+    ativo: true,
+    promocao: true,
+    desconto: 20,
+  ),
+  Produto(
+    nome: 'Bota de Couro',
+    precoCompra: 120,
+    precoVenda: 199.99,
+    quantidade: 3,
+    descricao: 'Bota de couro legítimo, ideal para o frio.',
+    categoria: 'Calçados',
+    imagemUrl: 'https://i.imgur.com/J8YShQf.png',
+    ativo: true,
+    promocao: false,
+    desconto: 0,
+  ),
+];
 
-class _ProductListScreenState extends State<ProductListScreen> {
-  final List<Product> products = [
-    Product(
-      name: "Vestido outono/inverno",
-      purchasePrice: 49.9,
-      salePrice: 159.9,
-      quantity: 15,
-      description: "Vestido de malha feminino moda outono/inverno",
-      category: "Vestidos",
-      imageUrl: "https://images.pexels.com/photos/20099739/pexels-photo-20099739/free-photo-of-mulher-modelo-arvore-de-pe.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      isActive: true,
-      isOnSale: false,
-      discount: 0,
-    ),
-    Product(
-      name: "Moda praia com 60% de desconto",
-      purchasePrice: 25,
-      salePrice: 39.99,
-      quantity: 13,
-      description: "Promoção IMPERDÍVEL de moda praia!\nParcelamos em até 6x sem juros",
-      category: "Promoção",
-      imageUrl: "https://media.istockphoto.com/id/2154294202/pt/foto/happy-young-woman-with-red-hair-running-with-yellow-scarf-at-beach.jpg?s=612x612&w=0&k=20&c=G-jKwF5ablVQgyv8irMxPbZ3u_BDUTUHpTm__o7m3tM=",
-      isActive: true,
-      isOnSale: true,
-      discount: 60,
-    ),
-  ];
-
-  void _navigateToAddProduct() async {
-    final newProduct = await Navigator.push<Product>(
-      context,
-      MaterialPageRoute(builder: (_) => ProductFormScreen()),
-    );
-    if (newProduct != null) setState(() => products.add(newProduct));
-  }
+class CadastroProdutoScreen extends StatefulWidget {
+  const CadastroProdutoScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Produtos (${products.length})"),
-        actions: [IconButton(icon: const Icon(Icons.add), onPressed: _navigateToAddProduct)],
-      ),
-      body: ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (_, i) {
-          final p = products[i];
-          return ListTile(
-            leading: Image.network(p.imageUrl, width: 50, height: 50, errorBuilder: (_, __, ___) => const Icon(Icons.error)),
-            title: Text(p.name),
-            subtitle: Text("R\$${p.salePrice.toStringAsFixed(2)}${p.isOnSale ? " (${p.discount}% OFF)" : ""}"),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(product: p))),
-          );
-        },
-      ),
-    );
-  }
+  State<CadastroProdutoScreen> createState() => _CadastroProdutoScreenState();
 }
 
-class ProductFormScreen extends StatefulWidget {
-  @override
-  State<ProductFormScreen> createState() => _ProductFormScreenState();
-}
-
-class _ProductFormScreenState extends State<ProductFormScreen> {
+class _CadastroProdutoScreenState extends State<CadastroProdutoScreen> {
   final _formKey = GlobalKey<FormState>();
-  final Map<String, TextEditingController> _controllers = {
-    "name": TextEditingController(),
-    "purchasePrice": TextEditingController(),
-    "salePrice": TextEditingController(),
-    "quantity": TextEditingController(),
-    "description": TextEditingController(),
-    "category": TextEditingController(),
-    "imageUrl": TextEditingController(),
-  };
+  final TextEditingController _nome = TextEditingController();
+  final TextEditingController _precoCompra = TextEditingController();
+  final TextEditingController _precoVenda = TextEditingController();
+  final TextEditingController _quantidade = TextEditingController();
+  final TextEditingController _descricao = TextEditingController();
+  final TextEditingController _categoria = TextEditingController();
+  final TextEditingController _imagemUrl = TextEditingController();
 
-  bool _isActive = true, _isOnSale = false;
-  double _discount = 0;
+  bool _ativo = false;
+  bool _promocao = false;
+  double _desconto = 0;
 
-  Widget _buildTextField(String key, String label, {int maxLines = 1, bool isNumber = false}) {
-    return TextFormField(
-      controller: _controllers[key],
-      decoration: InputDecoration(labelText: label),
-      keyboardType: isNumber ? TextInputType.number : null,
-      maxLines: maxLines,
-      validator: (v) => v == null || v.isEmpty ? "Obrigatório" : null,
-    );
-  }
-
-  void _saveProduct() {
+  void _cadastrarProduto() {
     if (_formKey.currentState!.validate()) {
-      Navigator.pop(
+      setState(() {
+        produtos.add(Produto(
+          nome: _nome.text,
+          precoCompra: double.parse(_precoCompra.text),
+          precoVenda: double.parse(_precoVenda.text),
+          quantidade: int.parse(_quantidade.text),
+          descricao: _descricao.text,
+          categoria: _categoria.text,
+          imagemUrl: _imagemUrl.text,
+          ativo: _ativo,
+          promocao: _promocao,
+          desconto: _desconto,
+        ));
+      });
+      Navigator.push(
         context,
-        Product(
-          name: _controllers["name"]!.text,
-          purchasePrice: double.parse(_controllers["purchasePrice"]!.text),
-          salePrice: double.parse(_controllers["salePrice"]!.text),
-          quantity: int.parse(_controllers["quantity"]!.text),
-          description: _controllers["description"]!.text,
-          category: _controllers["category"]!.text,
-          imageUrl: _controllers["imageUrl"]!.text,
-          isActive: _isActive,
-          isOnSale: _isOnSale,
-          discount: _discount,
-        ),
+        MaterialPageRoute(builder: (context) => const ListaProdutosScreen()),
       );
     }
   }
@@ -151,27 +115,78 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Novo Produto")),
+      appBar: AppBar(title: const Text('Cadastrar Produto')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
-              _buildTextField("name", "Nome*"),
-              _buildTextField("purchasePrice", "Preço de Compra*", isNumber: true),
-              _buildTextField("salePrice", "Preço de Venda*", isNumber: true),
-              _buildTextField("quantity", "Quantidade*", isNumber: true),
-              _buildTextField("description", "Descrição*", maxLines: 3),
-              _buildTextField("category", "Categoria*"),
-              _buildTextField("imageUrl", "URL da Imagem*"),
-              SwitchListTile(title: const Text("Ativo"), value: _isActive, onChanged: (v) => setState(() => _isActive = v)),
-              CheckboxListTile(title: const Text("Promoção"), value: _isOnSale, onChanged: (v) => setState(() => _isOnSale = v!)),
-              if (_isOnSale) ...[
-                Text("Desconto: ${_discount.round()}%"),
-                Slider(value: _discount, max: 100, onChanged: (v) => setState(() => _discount = v)),
-              ],
-              ElevatedButton(onPressed: _saveProduct, child: const Text("Salvar")),
+              TextFormField(
+                controller: _nome,
+                decoration: const InputDecoration(labelText: 'Nome'),
+                validator: (value) => value!.isEmpty ? 'Campo obrigatório' : null,
+              ),
+              TextFormField(
+                controller: _precoCompra,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Preço de Compra'),
+                validator: (value) => value!.isEmpty ? 'Campo obrigatório' : null,
+              ),
+              TextFormField(
+                controller: _precoVenda,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Preço de Venda'),
+                validator: (value) => value!.isEmpty ? 'Campo obrigatório' : null,
+              ),
+              TextFormField(
+                controller: _quantidade,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Quantidade'),
+                validator: (value) => value!.isEmpty ? 'Campo obrigatório' : null,
+              ),
+              TextFormField(
+                controller: _descricao,
+                decoration: const InputDecoration(labelText: 'Descrição'),
+                validator: (value) => value!.isEmpty ? 'Campo obrigatório' : null,
+              ),
+              TextFormField(
+                controller: _categoria,
+                decoration: const InputDecoration(labelText: 'Categoria'),
+              ),
+              TextFormField(
+                controller: _imagemUrl,
+                decoration: const InputDecoration(labelText: 'URL da Imagem'),
+              ),
+              SwitchListTile(
+                title: const Text('Produto Ativo'),
+                value: _ativo,
+                onChanged: (val) => setState(() => _ativo = val),
+              ),
+              CheckboxListTile(
+                title: const Text('Em Promoção'),
+                value: _promocao,
+                onChanged: (val) => setState(() => _promocao = val!),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Desconto (%)'),
+                  Slider(
+                    value: _desconto,
+                    min: 0,
+                    max: 100,
+                    divisions: 20,
+                    label: '${_desconto.round()}%',
+                    onChanged: (val) => setState(() => _desconto = val),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _cadastrarProduto,
+                child: const Text('Cadastrar Produto'),
+              )
             ],
           ),
         ),
@@ -180,41 +195,77 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   }
 }
 
-class ProductDetailScreen extends StatelessWidget {
-  final Product product;
-  const ProductDetailScreen({required this.product});
+class ListaProdutosScreen extends StatelessWidget {
+  const ListaProdutosScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(product.name)),
+      appBar: AppBar(title: const Text('Lista de Produtos')),
+      body: ListView.builder(
+        itemCount: produtos.length,
+        itemBuilder: (context, index) {
+          final produto = produtos[index];
+          return ListTile(
+            leading: Image.network(
+              produto.imagemUrl,
+              width: 50,
+              height: 50,
+              errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+            ),
+            title: Text(produto.nome),
+            subtitle: Text('R\$ ${produto.precoVenda.toStringAsFixed(2)}'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetalhesProdutoScreen(produto: produto),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class DetalhesProdutoScreen extends StatelessWidget {
+  final Produto produto;
+  const DetalhesProdutoScreen({super.key, required this.produto});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(produto.nome)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            Center(
-              child: Image.network(
-                product.imageUrl,
-                height: 200,
-                errorBuilder: (_, __, ___) => const Icon(Icons.error, size: 100),
-              ),
+            Image.network(
+              produto.imagemUrl,
+              height: 200,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => const Icon(Icons.error, size: 100),
             ),
             const SizedBox(height: 16),
-            Text("Preço: R\$${product.salePrice.toStringAsFixed(2)}", style: const TextStyle(fontSize: 18)),
-            Text("Estoque: ${product.quantity}"),
-            Text("Categoria: ${product.category}"),
-            const SizedBox(height: 8),
-            const Text("Descrição:", style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(product.description),
-            const SizedBox(height: 8),
+            Text('Nome: ${produto.nome}', style: const TextStyle(fontSize: 18)),
+            Text('Categoria: ${produto.categoria}'),
+            Text('Descrição: ${produto.descricao}'),
+            Text('Preço de Compra: R\$ ${produto.precoCompra.toStringAsFixed(2)}'),
+            Text('Preço de Venda: R\$ ${produto.precoVenda.toStringAsFixed(2)}'),
+            Text('Quantidade: ${produto.quantidade}'),
             Row(
               children: [
-                Icon(Icons.check_circle, color: product.isActive ? Colors.green : Colors.grey),
-                Text(" ${product.isActive ? "Ativo" : "Inativo"}"),
+                const Text('Ativo: '),
+                Icon(produto.ativo ? Icons.check_circle : Icons.cancel, color: produto.ativo ? Colors.green : Colors.red),
               ],
             ),
-            if (product.isOnSale)
-              Text("🔥 PROMOÇÃO: ${product.discount}% OFF", style: const TextStyle(color: Colors.red)),
+            Row(
+              children: [
+                const Text('Promoção: '),
+                Icon(produto.promocao ? Icons.local_offer : Icons.close, color: produto.promocao ? Colors.orange : Colors.grey),
+              ],
+            ),
+            Text('Desconto: ${produto.desconto.toStringAsFixed(0)}%'),
           ],
         ),
       ),
